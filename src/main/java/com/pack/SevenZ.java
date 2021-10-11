@@ -11,11 +11,11 @@ import java.io.IOException;
 
 public class SevenZ {
 
-    private SevenZ() {
+    SevenZ() {
 
     }
 
-    public static void compress(String name, File... files) throws IOException {
+    public void compress(String name, File... files) throws IOException {
         try (SevenZOutputFile out = new SevenZOutputFile(new File(name))){
             for (File file : files){
                 addToArchiveCompression(out, file, ".");
@@ -23,7 +23,7 @@ public class SevenZ {
         }
     }
 
-    public static void decompress(String in, File destination) throws IOException {
+    public void decompress(String in, File destination) throws IOException {
         SevenZFile sevenZFile = new SevenZFile(new File(in));
         SevenZArchiveEntry entry;
         while ((entry = sevenZFile.getNextEntry()) != null){

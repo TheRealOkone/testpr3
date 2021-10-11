@@ -10,51 +10,76 @@ import java.util.zip.*;
 
 public class Main {
     public static void main(String[] args) {
-        String filename = "C:\\SomeDir\\notes.txt";
-        try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream("C:\\SomeDir\\output.zip"));
-            FileInputStream fis= new FileInputStream(filename);)
-        {
-            ZipEntry entry1=new ZipEntry("notes.txt");
-            zout.putNextEntry(entry1);
-            // считываем содержимое файла в массив byte
-            byte[] buffer = new byte[fis.available()];
-            fis.read(buffer);
-            // добавляем содержимое к архиву
-            zout.write(buffer);
-            // закрываем текущую запись для новой записи
-            zout.closeEntry();
-        }
-        catch(Exception ex){
-
-            System.out.println(ex.getMessage());
-        }
-
-
-        try(ZipInputStream zin = new ZipInputStream(new FileInputStream("C:\\SomeDir\\output.zip")))
-        {
-            ZipEntry entry;
-            String name;
-            long size;
-            while((entry=zin.getNextEntry())!=null){
-
-                name = entry.getName(); // получим название файла
-                size=entry.getSize();  // получим его размер в байтах
-                System.out.printf("File name: %s \t File size: %d \n", name, size);
-
-                // распаковка
-                FileOutputStream fout = new FileOutputStream("C:\\somedir\\new" + name);
-                for (int c = zin.read(); c != -1; c = zin.read()) {
-                    fout.write(c);
+        if(args[0] == "--zip"){
+            if(args[1] == "-c"){
+                String filename = args[2];
+                try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(".\\output.zip"));
+                    FileInputStream fis= new FileInputStream(filename);)
+                {
+                    ZipEntry entry1=new ZipEntry("notes.txt");
+                    zout.putNextEntry(entry1);
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);
+                    zout.write(buffer);
+                    zout.closeEntry();
                 }
-                fout.flush();
-                zin.closeEntry();
-                fout.close();
+                catch(Exception ex){
+
+                    System.out.println(ex.getMessage());
+                }
+            }
+            if(args[1] == "-d"){
+                String filename = args[2];
+                try(ZipInputStream zin = new ZipInputStream(new FileInputStream(filename)))
+                {
+                    ZipEntry entry;
+                    String name;
+                    long size;
+                    while((entry=zin.getNextEntry())!=null){
+
+                        name = entry.getName();
+                        size=entry.getSize();
+                        System.out.printf("File name: %s \t File size: %d \n", name, size);
+
+                        // распаковка
+                        FileOutputStream fout = new FileOutputStream("C:\\somedir\\new" + name);
+                        for (int c = zin.read(); c != -1; c = zin.read()) {
+                            fout.write(c);
+                        }
+                        fout.flush();
+                        zin.closeEntry();
+                        fout.close();
+                    }
+                }
+                catch(Exception ex){
+
+                    System.out.println(ex.getMessage());
+                }
             }
         }
-        catch(Exception ex){
-
-            System.out.println(ex.getMessage());
+        if(args[0] == "--7z"){
+            SevenZ sevenz = new SevenZ();
+            if(args[1] == "-c"){
+                try {
+                    sevenz.compress(args[2]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(args[1] == "-d"){
+                try {
+                    File file = new File(".");
+                    sevenz.decompress(args[2],file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+
+
+
+
 
 
     }
