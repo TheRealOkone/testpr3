@@ -15,11 +15,12 @@ public class SevenZ {
 
     }
 
-    public void compress(String name, File... files) throws IOException {
+    public boolean compress(String name, File... files) throws IOException {
         try (SevenZOutputFile out = new SevenZOutputFile(new File(name))){
             for (File file : files){
                 addToArchiveCompression(out, file, ".");
             }
+            return true;
         }
     }
 
